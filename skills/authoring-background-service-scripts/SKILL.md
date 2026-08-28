@@ -28,7 +28,7 @@ Turn ad‑hoc “run this in another terminal” workflows into a **small gum-dr
 - If `gum` is missing, install via:
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/farfarfun/nltdeploy/master/scripts/05-utils/utils-setup.sh | bash -s -- gum --force
+curl -LsSf https://raw.githubusercontent.com/farfarfun/fundeploy/master/scripts/tools/utils/setup.sh | bash -s -- gum --force
 ```
 
 Re-check `command -v gum` after install; fail fast with a clear message if still unavailable.
