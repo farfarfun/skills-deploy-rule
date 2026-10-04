@@ -9,22 +9,18 @@
 ```bash
 git clone https://github.com/farfarfun/skills-deploy-rule.git
 mkdir -p ~/.codex/skills
-cp -R skills-deploy-rule ~/.codex/skills/
+cp -R skills-deploy-rule/skills/* ~/.codex/skills/
 ```
 
-## 最小示例
+## 安装验证
 
-符合规范的项目通过统一入口管理服务。以下命令先检查脚本语法，再分别验证前台开发模式和后台启停生命周期：
+安装后确认 Codex 可以发现该 Skill：
 
 ```bash
-bash -n scripts/setup.sh
-scripts/setup.sh run dev
-scripts/setup.sh start dev
-scripts/setup.sh status
-scripts/setup.sh stop dev
+test -f ~/.codex/skills/authoring-background-service-scripts/SKILL.md
 ```
 
-`run dev` 在前台运行开发服务（验证后用 `Ctrl-C` 退出），其余命令验证后台生命周期。脚本应将 PID、日志和锁文件保存到仓库内的 `.run/`，拒绝重复启动，识别陈旧 PID，并在启动和停止后校验进程及端口；验证失败必须返回非零状态。`start prod` 只能运行已经安装的正式包，不能临时从源码构建或改用开发服务。
+本仓库只发布 Skill 文档，不包含 `scripts/setup.sh` 或示例服务。将 Skill 用于目标项目后，按其要求实现并验证 `scripts/setup.sh <action> <env>`；例如 `bash -n scripts/setup.sh`、`scripts/setup.sh run dev`、`scripts/setup.sh start dev`、`scripts/setup.sh status` 和 `scripts/setup.sh stop dev`。`run dev` 在前台运行开发服务（验证后用 `Ctrl-C` 退出），其余命令验证后台生命周期。
 
 ---
 
