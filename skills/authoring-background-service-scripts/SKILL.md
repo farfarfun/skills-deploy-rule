@@ -48,6 +48,8 @@ Ship `scripts/setup.sh` as the single service-management entrypoint. Non-interac
 
 `start prod` must run an already installed formal package. It must fail with a non-zero status when that package is absent, rather than building from source or falling back to a development command.
 
+`run` stays attached to the caller's terminal; `start` detaches and writes runtime state. When `status` omits an environment, it must report every configured environment rather than silently choosing one.
+
 ## Data layout
 
 Under the repository root:
@@ -60,6 +62,8 @@ Under the repository root:
 
 Resolve the repository root from `scripts/setup.sh` itself, not from the caller's current directory. Do not scatter PID, lock, or log files across `/tmp`, the user's home directory, or the source tree outside `.run/`.
 
+Define dev/prod ports and other environment defaults together near the top of the script. Do not duplicate port literals across lifecycle functions.
+
 ## Stop and restart rules
 
 1. **Start preflight**: under the lifecycle lock, reject a live owned PID, a matching listener, or a port owned by another process. Distinguish a stale PID file from the expected service by checking process identity; never signal an unrelated reused PID.
@@ -68,6 +72,8 @@ Resolve the repository root from `scripts/setup.sh` itself, not from the caller'
 4. **Port check**: verify that the configured port is no longer listening. If it remains open, report the owner and exit non-zero.
 5. **Cleanup**: remove PID and lock state only after the process is gone and the port is free.
 6. **Restart**: do not start a second instance unless stop completes successfully.
+
+Use quoted variable expansions and arrays for command construction. Use `exec` only for a foreground command when no cleanup wrapper is needed; never use `eval`. All process checks and signals must be limited to processes whose identity has been verified as owned by the service.
 
 ## Quick reference
 
@@ -95,5 +101,6 @@ Before merging or publishing the CLI:
 5. **`stop dev`**: process ends; port is free; PID state is cleared; repeated stop has documented idempotent behavior.
 6. **Production**: `start prod` uses only the installed formal package and fails non-zero when it is missing.
 7. **`restart`/`install`**: never create two listeners; simulate dependency or network failure and verify a non-zero exit with no partial runtime state.
+8. **All environments**: `status` without an environment reports each configured environment; verify both detached `start` and foreground `run` retain their distinct behavior.
 
 **Org note:** Treat major edits like code: run at least one **baseline scenario without** this doc and one **with** it when changing enforcement-heavy sections (same discipline as `superpowers:writing-skills`).
